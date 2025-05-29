@@ -15,7 +15,8 @@ const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 const SOURCE_DIR = process.env.SOURCE_DIR || "./src"; // Example: scan files in the 'src' directory
 const CHUNK_SIZE = parseInt(process.env.CHUNK_SIZE || "800", 10);
 const CHUNK_OVERLAP = parseInt(process.env.CHUNK_OVERLAP || "100", 10);
-const BATCH_SIZE = parseInt(process.env.BATCH_SIZE || "32", 10);
+const RAW_DOC_PROCESSING_BATCH_SIZE = parseInt(process.env.RAW_DOC_PROCESSING_BATCH_SIZE || "10", 10); // Number of raw documents to process for splitting at a time
+const CHUNK_PROCESSING_BATCH_SIZE = parseInt(process.env.CHUNK_PROCESSING_BATCH_SIZE || "100", 10); // Number of chunks to embed and add to Qdrant at once
 const EMBEDDING_MODEL = process.env.EMBEDDING_MODEL || "text-embedding-004";
 const EMBEDDING_DIMENSIONS = parseInt(process.env.EMBEDDING_DIMENSIONS || "768", 10); // default for text-embedding-004
 
@@ -48,6 +49,8 @@ const EMBEDDING_DIMENSIONS = parseInt(process.env.EMBEDDING_DIMENSIONS || "768",
  * EMBEDDING_MODEL=text-embedding-004
  * EMBEDDING_DIMENSIONS=768
  * BATCH_SIZE=32
+ * RAW_DOC_PROCESSING_BATCH_SIZE=10
+ * CHUNK_PROCESSING_BATCH_SIZE=100
  * ```
  * 
  * To run this script:
@@ -99,28 +102,6 @@ export async function main(): Promise<void> {
     chunkOverlap: CHUNK_OVERLAP,
   });
 
-  let splitDocs: Document[] = [];
-  for (const doc of rawDocs) {
-    try {
-      // Ensure pageContent is a string, as DirectoryLoader might return objects with path etc.
-      const content = typeof doc.pageContent === 'string' ? doc.pageContent : JSON.stringify(doc.pageContent);
-      const chunks = await textSplitter.splitText(content);
-      splitDocs = splitDocs.concat(chunks.map(chunk => new Document({ 
-          pageContent: chunk, 
-          metadata: { ...doc.metadata, source: doc.metadata.source || 'unknown' } 
-      })));
-    } catch (error) {
-      console.error(`Error splitting document ${doc.metadata.source}:`, error);
-      // Continue with other documents
-    }
-  }
-  console.log(`Split into ${splitDocs.length} document chunks.`);
-
-  if (splitDocs.length === 0) {
-    console.log("No document chunks to index after splitting. Exiting.");
-    return;
-  }
-
   // 3. Instantiate GoogleGenerativeAIEmbeddings
   console.log(`Initializing Google Gemini embeddings with model: ${EMBEDDING_MODEL}...`);
   const embeddings = new GoogleGenerativeAIEmbeddings({
@@ -153,21 +134,76 @@ export async function main(): Promise<void> {
     process.exit(1);
   }
 
-  // 5. Implement logic to addDocuments to Qdrant, managing batching for Qdrant client
-  console.log(`Adding ${splitDocs.length} document chunks to Qdrant collection '${QDRANT_COLLECTION_NAME}'...`);
-  
-  try {
-    await QdrantVectorStore.fromDocuments(splitDocs, embeddings, {
-        client: qdrantClient,
-        collectionName: QDRANT_COLLECTION_NAME,
-    });
-    console.log("All document chunks added to Qdrant successfully.");
-  } catch (error) {
-     console.error("Error adding documents to Qdrant:", error);
-     throw error; // Re-throw for main error handler
+  // 5. Implement logic to addDocuments to Qdrant, managing batching
+  console.log(`Processing ${rawDocs.length} raw documents and adding to Qdrant collection '${QDRANT_COLLECTION_NAME}'...`);
+
+  const vectorStore = new QdrantVectorStore(embeddings, {
+    client: qdrantClient,
+    collectionName: QDRANT_COLLECTION_NAME,
+  });
+
+  let totalChunksAdded = 0;
+  let totalRawDocsProcessed = 0;
+
+  for (let i = 0; i < rawDocs.length; i += RAW_DOC_PROCESSING_BATCH_SIZE) {
+    const rawDocBatch = rawDocs.slice(i, i + RAW_DOC_PROCESSING_BATCH_SIZE);
+    let chunksForCurrentRawBatch: Document[] = [];
+
+    console.log(`
+Processing raw document batch ${Math.floor(i / RAW_DOC_PROCESSING_BATCH_SIZE) + 1} of ${Math.ceil(rawDocs.length / RAW_DOC_PROCESSING_BATCH_SIZE)} (up to ${RAW_DOC_PROCESSING_BATCH_SIZE} raw docs)...`);
+
+    for (const doc of rawDocBatch) {
+      try {
+        const content = typeof doc.pageContent === 'string' ? doc.pageContent : JSON.stringify(doc.pageContent);
+        console.log('Processing content:',content);
+        if (!content || content.trim() === "") {
+          console.warn(`Skipping empty content from document: ${doc.metadata?.source || 'unknown source'}`);
+          continue;
+        }
+        const chunks = await textSplitter.splitText(content);
+        chunksForCurrentRawBatch.push(...chunks.map(chunk => new Document({ 
+            pageContent: chunk, 
+            metadata: { ...doc.metadata, source: doc.metadata.source || 'unknown' } 
+        })));
+        totalRawDocsProcessed++;
+      } catch (error) {
+        console.error(`Error splitting document ${doc.metadata?.source || 'unknown source'}:`, error);
+        // Continue with other documents in the raw batch
+      }
+    }
+    
+    console.log(`Raw document batch processed. ${chunksForCurrentRawBatch.length} chunks generated. Total raw docs processed so far: ${totalRawDocsProcessed}.`);
+
+    if (chunksForCurrentRawBatch.length > 0) {
+      console.log(`Adding ${chunksForCurrentRawBatch.length} chunks to Qdrant in batches of ${CHUNK_PROCESSING_BATCH_SIZE}...`);
+      for (let j = 0; j < chunksForCurrentRawBatch.length; j += CHUNK_PROCESSING_BATCH_SIZE) {
+        const chunkBatch = chunksForCurrentRawBatch.slice(j, j + CHUNK_PROCESSING_BATCH_SIZE);
+        if (chunkBatch.length === 0) continue;
+
+        try {
+          console.log(`  Submitting chunk batch ${Math.floor(j / CHUNK_PROCESSING_BATCH_SIZE) + 1} of ${Math.ceil(chunksForCurrentRawBatch.length / CHUNK_PROCESSING_BATCH_SIZE)} (${chunkBatch.length} chunks)...`);
+          await vectorStore.addDocuments(chunkBatch);
+          totalChunksAdded += chunkBatch.length;
+          console.log(`  Chunk batch added. Total chunks added to Qdrant so far: ${totalChunksAdded}`);
+        } catch (error) {
+          console.error(`  Error adding chunk batch ${Math.floor(j / CHUNK_PROCESSING_BATCH_SIZE) + 1} to Qdrant:`, error);
+          // Decide if you want to re-throw, skip, or retry. For now, log and continue.
+        }
+      }
+    } else {
+      console.log("No chunks generated from this raw document batch.");
+    }
+
+    // Optional: Suggest garbage collection if available and running in an environment where it's helpful
+    if (global.gc) {
+        // console.log("Suggesting garbage collection...");
+        global.gc();
+    }
   }
   
-  console.log("Indexing process completed successfully.");
+  console.log(`
+Indexing process completed. Total ${totalChunksAdded} document chunks added to Qdrant.`);
+  console.log(`Total ${totalRawDocsProcessed} raw documents were processed.`);
 }
 
 // Run main if this script is executed directly
