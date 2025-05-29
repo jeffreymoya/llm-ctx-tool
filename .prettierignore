@@ -1,0 +1,15 @@
+node_modules
+dist
+coverage
+*.log
+package.json
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+*.md
+*.html
+*.css
+*.scss
+*.less
+.DS_Store
+*.env 
