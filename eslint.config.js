@@ -3,8 +3,10 @@ import tseslint from "typescript-eslint";
 import eslintPluginImport from 'eslint-plugin-import';
 import eslintPluginNode from 'eslint-plugin-node';
 import prettierRecommended from 'eslint-config-prettier';
+import eslintPluginPrettier from 'eslint-plugin-prettier';
 import { fileURLToPath } from 'url';
 import path from 'path';
+import { fixupPluginRules } from '@eslint/compat';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -39,12 +41,12 @@ export default tseslint.config(
       },
     },
     // Apply recommended ESLint and TypeScript ESLint rules
-    ...tseslint.configs.recommended, // This spreads the recommended rules into this config object
     rules: {
       // Add other core rules or overrides here
       // e.g., 'no-console': 'warn',
     },
   },
+  ...tseslint.configs.recommended, // Include recommended configs as separate objects
   { // Configuration for test files
     files: ["**/*.test.ts", "**/__tests__/**/*.ts"],
     languageOptions: {
@@ -81,7 +83,9 @@ export default tseslint.config(
   },
   { // Node plugin configuration for packages
     files: ['packages/**/*.ts'],
-    plugins: { node: eslintPluginNode },
+    plugins: { 
+      node: fixupPluginRules(eslintPluginNode),
+    },
     rules: {
       ...eslintPluginNode.configs.recommended.rules,
       'node/no-unsupported-features/es-syntax': ['error', { ignores: ['modules'] }],
@@ -96,6 +100,9 @@ export default tseslint.config(
   },
   { // Prettier integration for packages (place last)
     files: ['packages/**/*.ts'],
+    plugins: {
+      prettier: eslintPluginPrettier,
+    },
     ...prettierRecommended,
     rules: {
       // Prettier conflicts are handled by eslint-config-prettier
