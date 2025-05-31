@@ -77,7 +77,9 @@ export default tseslint.config(
       'import/resolver': {
         typescript: {
           alwaysTryTypes: true,
+          project: path.resolve(projectDir, 'tsconfig.json'),
         },
+        node: {},
       },
     },
   },

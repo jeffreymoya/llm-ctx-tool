@@ -1,4 +1,4 @@
-import { VectorStore, CodeChunk, SearchResult } from '../../ports';
+import { VectorStore, CodeChunk, SearchResult } from '@ports';
 import { QdrantClient } from '@qdrant/js-client-rest';
 
 export class QdrantVectorStore implements VectorStore {

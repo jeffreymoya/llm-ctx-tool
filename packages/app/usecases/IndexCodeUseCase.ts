@@ -1,5 +1,5 @@
 import { inject, injectable } from 'tsyringe';
-import { VectorStore, CodeProcessor } from '../../ports';
+import { VectorStore, CodeProcessor } from '@ports';
 
 @injectable()
 export class IndexCodeUseCase {

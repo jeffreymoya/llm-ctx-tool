@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import 'reflect-metadata';
 import { container } from 'tsyringe';
 import { Command } from 'commander';
@@ -9,10 +8,7 @@ import '../adapters'; // This will register adapter implementations
 
 const program = new Command();
 
-program
-  .name('llmctx')
-  .description('Code intelligence tool')
-  .version('0.1.0');
+program.name('llmctx').description('Code intelligence tool').version('0.1.0');
 
 program
   .command('index')
@@ -33,4 +29,4 @@ program
     console.log(JSON.stringify(results, null, 2));
   });
 
-program.parse(); 
+program.parse();

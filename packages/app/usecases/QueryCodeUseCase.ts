@@ -1,6 +1,6 @@
 import { inject, injectable } from 'tsyringe';
-import { VectorStore } from '../../ports';
-import { CodeChunk } from '../../core';
+import { VectorStore } from '@ports';
+import { CodeChunk } from '@core';
 
 @injectable()
 export class QueryCodeUseCase {

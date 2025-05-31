@@ -1,10 +1,18 @@
+export interface ChunkMetadata {
+  language?: string;
+  functionName?: string;
+  className?: string;
+  complexity?: number;
+  [key: string]: string | number | boolean | undefined;
+}
+
 export interface CodeChunk {
   id: string;
   content: string;
   filePath: string;
   startLine: number;
   endLine: number;
-  metadata: Record<string, any>;
+  metadata: ChunkMetadata;
 }
 
 export interface SearchResult {
