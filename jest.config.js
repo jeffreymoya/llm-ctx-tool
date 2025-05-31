@@ -1,17 +1,26 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  roots: ['<rootDir>/scripts', '<rootDir>/src'],
-  testMatch: ['**/*.spec.ts', '**/*.test.ts'],
-  transform: {
-    '^.+\\.ts$': 'ts-jest',
-  },
+  roots: ['<rootDir>/packages'],
+  testMatch: ['**/__tests__/**/*.ts', '**/?(*.)+(spec|test).ts'],
   collectCoverageFrom: [
-    'scripts/**/*.ts',
-    'src/**/*.ts',
-    '!**/*.spec.ts',
-    '!**/*.test.ts',
+    'packages/**/*.ts',
+    '!packages/**/*.d.ts',
+    '!packages/**/index.ts'
   ],
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
-  moduleFileExtensions: ['ts', 'js', 'json', 'node'],
+  moduleNameMapper: {
+    '^@core/(.*)$': '<rootDir>/packages/core/$1',
+    '^@ports/(.*)$': '<rootDir>/packages/ports/$1',
+    '^@app/(.*)$': '<rootDir>/packages/app/$1',
+    '^@adapters/(.*)$': '<rootDir>/packages/adapters/$1',
+    '^@cli/(.*)$': '<rootDir>/packages/cli/$1'
+  },
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80
+    }
+  }
 }; 
