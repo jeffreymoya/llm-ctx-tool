@@ -1,2 +1,2 @@
 export * from './usecases/IndexCodeUseCase';
-export * from './usecases/QueryCodeUseCase'; 
+export * from './usecases/QueryCodeUseCase';

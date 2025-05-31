@@ -1,0 +1,17 @@
+name: Structure Check
+on: [push, pull_request]
+
+jobs:
+  structure:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - run: npm ci
+      - run: npm run build
+      - run: npm run dep-check
+      - run: npm run lint 

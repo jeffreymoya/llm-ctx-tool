@@ -38,4 +38,9 @@ export interface FileAnalysis {
   imports: string[];
   functions: string[];
   classes: string[];
-} 
+}
+
+export * from './VectorStore';
+export * from './CodeProcessor';
+export * from './EmbeddingService';
+export * from './types';

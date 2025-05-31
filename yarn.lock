@@ -1088,7 +1088,7 @@ deepmerge@^4.2.2:
   resolved "https://registry.npmjs.org/deepmerge/-/deepmerge-4.3.1.tgz"
   integrity sha512-3sUqbMEc77XqpdNO7FRyRog+eW3ph+GYCbj+rK+uYyRMuwsVy0rMiVtPn+QJlKFvWP/1PYpapqYn0Me2knFn+A==
 
-dependency-cruiser@^16.2.0:
+dependency-cruiser@^16.10.2:
   version "16.10.2"
   resolved "https://registry.npmjs.org/dependency-cruiser/-/dependency-cruiser-16.10.2.tgz"
   integrity sha512-3tvyt9g3QV6iD6SLC+71bYZnKGTxHo/8dJeguhTgB2T0ui9k/6BbFlibrFYSlb7WeNHS1OlKUFY+BEQ1+w8gvg==
