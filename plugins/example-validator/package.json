@@ -1,0 +1,7 @@
+{
+  "name": "example-validator",
+  "version": "1.0.0",
+  "description": "Example validation plugin for llmctx",
+  "main": "index.js",
+  "llmctxVersion": ">=0.3.0"
+} 

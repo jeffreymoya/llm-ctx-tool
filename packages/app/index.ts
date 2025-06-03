@@ -1,2 +1,2 @@
-export * from './usecases/IndexCodeUseCase';
-export * from './usecases/QueryCodeUseCase';
+export * from './usecases/IndexCodeUseCase.ts';
+export * from './usecases/QueryCodeUseCase.ts';

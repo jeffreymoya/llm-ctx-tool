@@ -3,14 +3,14 @@ description:
 globs: *.tsx,*.ts
 alwaysApply: false
 ---
-When generating or editing TypeScript code, ensure the following:
+***IMPORTANT*** When generating or editing TypeScript code, ensure the following:
 
 1. **Strict typing**: Use explicit type annotations; avoid `any`. Prefer `unknown` with runtime type guards and generic types.
 2. **Idiomatic Usage**: Follow modern TypeScript patterns (async/await, functional constructs like `map`/`filter`/`reduce`, ES modules, top-level `await` where supported).
 3. **TSDoc Comments**: Add TSDoc (`/** ... */`) for all exported members. Include `@param`, `@returns`, and concise examples.
 4. **Error Handling**: Use typed `Error` subclasses; wrap asynchronous code in `try/catch` and handle promise rejections explicitly.
 5. **Code Style**: Adhere to ESLint/Prettier rules. This project is configured with ESLint and Prettier to enforce consistent code style and catch potential errors. Key configuration files include:
-    - `.eslintrc.js`: ESLint configuration, extending recommended rules for TypeScript, Imports, Node.js, and Prettier.
+    - `eslint.config.js`: ESLint configuration, extending recommended rules for TypeScript, Imports, Node.js, and Prettier.
     - `.prettierrc.js`: Prettier configuration for code formatting (e.g., print width, single quotes, trailing commas).
     - `.eslintignore` & `.prettierignore`: Specify files and directories to be ignored by ESLint and Prettier respectively.
 
@@ -21,17 +21,28 @@ When generating or editing TypeScript code, ensure the following:
     - `npm run format:check`: Check if code is formatted according to Prettier rules.
 
     Ensure code passes linting and formatting checks before committing. Consistent indentation, semicolons, quotes, import ordering, and avoiding `no-console` in production are enforced.
-6. **Naming Conventions**: Use `camelCase` for variables/functions, `PascalCase` for types/classes/interfaces, and `UPPER_SNAKE_CASE` for constants.
-7. **Optimized Imports**: Import only needed symbols; use `import type` for types; leverage path aliases for clarity.
-8. **Unit Test Stubs**: Provide a Jest/Mocha test skeleton (`*.spec.ts`) covering primary cases and edge conditions.
-9. **Immutability**: Prefer `readonly` properties and `const` declarations; avoid mutating data structures directly.
-10. **Null Safety**: Enable `strictNullChecks`; avoid non-null assertions (`!`) unless unavoidable. Handle `null`/`undefined` explicitly.
-11. **SOLID Principles**: Design modules/classes with Single Responsibility and Dependency Inversion; apply DRY and YAGNI where appropriate.
-12. **Performance**: Use lazy evaluation for heavy computations; avoid unnecessary object spreads or deep clones.
-13. **Security & Validation**: Sanitize/validate external inputs; integrate runtime validators (Zod, io-ts) for API boundaries.
-14. **Export Strategy**: Favor named exports over default exports for clearer imports and better tree-shaking.
-15. **Project Conventions**: Follow project-specific directory structure, file naming, and coding patterns.
-16. **Documentation Links**: Where helpful, include links to official TypeScript docs or project style guides.
-17. **Contextual Examples**: Offer minimal usage snippets for new APIs or complex types.
-18. **Centralized Definitions**: Place shared type definitions, interfaces, and enums in a common, easily accessible location (e.g., a dedicated `types` directory or `common.types.ts` files) to promote reusability and maintainability.
-19. **Verify Imports**: Always double-check import statements for correctness, ensuring that paths are accurate, all imported members are used, and that imports are organized according to project guidelines (e.g., sorted, grouped).
+6. **Compilation and Tooling**: The project uses `tsc` for compilation, configured via `tsconfig.json`. Key aspects of the configuration include:
+    - Strict mode and related options (`strict`, `noImplicitReturns`, `noFallthroughCasesInSwitch`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`) are enabled for strong type checking.
+    - Path aliases are configured (`@core/*`, `@ports/*`, etc.) using `baseUrl` and `paths` in `tsconfig.json`. Use these aliases for internal module imports.
+    - The project includes files from the `packages/` directory, excluding test files (`**/*.test.ts`, `**/*.spec.ts`), `node_modules`, and `dist`.
+
+    Relevant npm scripts in `package.json` for building, developing, and testing include:
+    - `npm run build`: Compiles TypeScript code using `tsc`.
+    - `npm run dev`: Runs the application using `ts-node` for development.
+    - `npm run test`: Runs tests using Jest.
+    - `npm run fix`: Runs both linting and formatting fixes.
+
+7. **Naming Conventions**: Use `camelCase` for variables/functions, `PascalCase` for types/classes/interfaces, and `UPPER_SNAKE_CASE` for constants.
+8. **Optimized Imports**: Import only needed symbols; use `import type` for types; leverage path aliases for clarity.
+9. **Unit Test Stubs**: Provide a Jest/Mocha test skeleton (`*.spec.ts`) covering primary cases and edge conditions.
+10. **Immutability**: Prefer `readonly` properties and `const` declarations; avoid mutating data structures directly.
+11. **Null Safety**: Enable `strictNullChecks`; avoid non-null assertions (`!`) unless unavoidable. Handle `null`/`undefined` explicitly.
+12. **SOLID Principles**: Design modules/classes with Single Responsibility and Dependency Inversion; apply DRY and YAGNI where appropriate.
+13. **Performance**: Use lazy evaluation for heavy computations; avoid unnecessary object spreads or deep clones.
+14. **Security & Validation**: Sanitize/validate external inputs; integrate runtime validators (Zod, io-ts) for API boundaries.
+15. **Export Strategy**: Favor named exports over default exports for clearer imports and better tree-shaking.
+16. **Project Conventions**: Follow project-specific directory structure, file naming, and coding patterns.
+17. **Documentation Links**: Where helpful, include links to official TypeScript docs or project style guides.
+18. **Contextual Examples**: Offer minimal usage snippets for new APIs or complex types.
+19. **Centralized Definitions**: Place shared type definitions, interfaces, and enums in a common, easily accessible location (e.g., a dedicated `types` directory or `common.types.ts` files) to promote reusability and maintainability.
+20. **Verify Imports**: Always double-check import statements for correctness, ensuring that paths are accurate, all imported members are used, and that imports are organized according to project guidelines (e.g., sorted, grouped).

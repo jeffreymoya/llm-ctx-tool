@@ -1,27 +1,66 @@
+// ============================================================================
+// tsconfig.json - Updated and streamlined
+// ============================================================================
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "ES2020",
-    "moduleResolution": "node",
-    "lib": ["ES2020"],
+    // Target and Module (aligned)
+    "target": "ES2022",
+    "module": "ES2022",
+    "lib": ["ES2022"],
+    "moduleResolution": "bundler", // Modern resolution for ES modules with bundlers
+    
+    // Output
     "declaration": true,
+    "sourceMap": true,
     "outDir": "./dist",
     "rootDir": "./packages",
+    "removeComments": true,
+    
+    // Type Checking (streamlined - strict covers most)
     "strict": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    
+    // Module Features
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    
+    // Quality of Life
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    
+    // Decorators (if needed)
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    
+    // Path Mapping
     "baseUrl": "./packages",
     "paths": {
       "@core/*": ["core/*"],
       "@ports/*": ["ports/*"],
       "@app/*": ["app/*"],
       "@adapters/*": ["adapters/*"],
-      "@cli/*": ["cli/*"]
+      "@cli/*": ["cli/*"],
+      "@config/*": ["config/*"]
     }
   },
   "include": ["packages/**/*"],
   "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]
-} 
+}
+
+
+// ============================================================================
+// Key Alignment Points:
+// ============================================================================
+// 1. Both configs target ES2022
+// 2. ESLint uses typescript-eslint parser with same project reference
+// 3. Import extensions are required (matching allowImportingTsExtensions)
+// 4. Module resolution handled by TypeScript, not ESLint
+// 5. Removed conflicting node plugin rules
+// 6. Added proper TypeScript rules that align with strict config
+// 7. Modern flat config structure throughout

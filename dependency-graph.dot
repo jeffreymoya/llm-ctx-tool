@@ -1,0 +1,36 @@
+strict digraph "dependency-cruiser output"{
+    rankdir="LR" splines="ortho" overlap="false" nodesep="0.16" ranksep="0.18" fontname="Helvetica-bold" fontsize="9" style="rounded,bold,filled" fillcolor="#ffffff" compound="true"
+    node [shape="box" style="rounded, filled" height="0.2" color="black" fillcolor="#ffffcc" fontcolor="black" fontname="Helvetica" fontsize="9"]
+    edge [arrowhead="normal" arrowsize="0.6" penwidth="2.0" color="#00000033" fontname="Helvetica" fontsize="9"]
+
+    subgraph "cluster_packages" {label="packages" subgraph "cluster_packages/adapters" {label="adapters" "packages/adapters/index.ts" [label=<index.ts> tooltip="index.ts" URL="packages/adapters/index.ts" fillcolor="#ddfeff"] } }
+    "packages/adapters/index.ts" -> "packages/adapters/qdrant/QdrantVectorStore.ts"
+    subgraph "cluster_packages" {label="packages" subgraph "cluster_packages/adapters" {label="adapters" subgraph "cluster_packages/adapters/qdrant" {label="qdrant" "packages/adapters/qdrant/QdrantVectorStore.ts" [label=<QdrantVectorStore.ts> tooltip="QdrantVectorStore.ts" URL="packages/adapters/qdrant/QdrantVectorStore.ts" fillcolor="#ddfeff"] } } }
+    subgraph "cluster_packages" {label="packages" subgraph "cluster_packages/app" {label="app" "packages/app/index.ts" [label=<index.ts> tooltip="index.ts" URL="packages/app/index.ts" fillcolor="#ddfeff"] } }
+    "packages/app/index.ts" -> "packages/app/usecases/IndexCodeUseCase.ts" [arrowhead="inv"]
+    "packages/app/index.ts" -> "packages/app/usecases/QueryCodeUseCase.ts" [arrowhead="inv"]
+    subgraph "cluster_packages" {label="packages" subgraph "cluster_packages/app" {label="app" subgraph "cluster_packages/app/usecases" {label="usecases" "packages/app/usecases/IndexCodeUseCase.ts" [label=<IndexCodeUseCase.ts> tooltip="IndexCodeUseCase.ts" URL="packages/app/usecases/IndexCodeUseCase.ts" fillcolor="#ddfeff"] } } }
+    subgraph "cluster_packages" {label="packages" subgraph "cluster_packages/app" {label="app" subgraph "cluster_packages/app/usecases" {label="usecases" "packages/app/usecases/QueryCodeUseCase.ts" [label=<QueryCodeUseCase.ts> tooltip="QueryCodeUseCase.ts" URL="packages/app/usecases/QueryCodeUseCase.ts" fillcolor="#ddfeff"] } } }
+    subgraph "cluster_packages" {label="packages" subgraph "cluster_packages/cli" {label="cli" "packages/cli/index.ts" [label=<index.ts> tooltip="index.ts" URL="packages/cli/index.ts" fillcolor="#ddfeff"] } }
+    "packages/cli/index.ts" -> "packages/adapters/index.ts"
+    "packages/cli/index.ts" -> "packages/app/index.ts"
+    subgraph "cluster_packages" {label="packages" subgraph "cluster_packages/core" {label="core" subgraph "cluster_packages/core/entities" {label="entities" "packages/core/entities/CodeChunk.ts" [label=<CodeChunk.ts> tooltip="CodeChunk.ts" URL="packages/core/entities/CodeChunk.ts" fillcolor="#ddfeff"] } } }
+    subgraph "cluster_packages" {label="packages" subgraph "cluster_packages/core" {label="core" subgraph "cluster_packages/core/entities" {label="entities" subgraph "cluster_packages/core/entities/__tests__" {label="__tests__" "packages/core/entities/__tests__/CodeChunk.test.ts" [label=<CodeChunk.test.ts> tooltip="CodeChunk.test.ts" URL="packages/core/entities/__tests__/CodeChunk.test.ts" fillcolor="#ddfeff"] } } } }
+    "packages/core/entities/__tests__/CodeChunk.test.ts" -> "packages/core/entities/CodeChunk.ts"
+    subgraph "cluster_packages" {label="packages" subgraph "cluster_packages/core" {label="core" "packages/core/index.ts" [label=<index.ts> tooltip="index.ts" URL="packages/core/index.ts" fillcolor="#ddfeff"] } }
+    "packages/core/index.ts" -> "packages/core/entities/CodeChunk.ts" [arrowhead="inv"]
+    "packages/core/index.ts" -> "packages/core/services/CodeAnalyzer.ts" [arrowhead="inv"]
+    subgraph "cluster_packages" {label="packages" subgraph "cluster_packages/core" {label="core" subgraph "cluster_packages/core/services" {label="services" "packages/core/services/CodeAnalyzer.ts" [label=<CodeAnalyzer.ts> tooltip="CodeAnalyzer.ts" URL="packages/core/services/CodeAnalyzer.ts" fillcolor="#ddfeff"] } } }
+    "packages/core/services/CodeAnalyzer.ts" -> "packages/core/entities/CodeChunk.ts"
+    subgraph "cluster_packages" {label="packages" subgraph "cluster_packages/ports" {label="ports" "packages/ports/CodeProcessor.ts" [label=<CodeProcessor.ts> tooltip="CodeProcessor.ts" URL="packages/ports/CodeProcessor.ts" fillcolor="#ddfeff"] } }
+    "packages/ports/CodeProcessor.ts" -> "packages/ports/types.ts"
+    subgraph "cluster_packages" {label="packages" subgraph "cluster_packages/ports" {label="ports" "packages/ports/EmbeddingService.ts" [label=<EmbeddingService.ts> tooltip="EmbeddingService.ts" URL="packages/ports/EmbeddingService.ts" fillcolor="#ddfeff"] } }
+    subgraph "cluster_packages" {label="packages" subgraph "cluster_packages/ports" {label="ports" "packages/ports/VectorStore.ts" [label=<VectorStore.ts> tooltip="VectorStore.ts" URL="packages/ports/VectorStore.ts" fillcolor="#ddfeff"] } }
+    "packages/ports/VectorStore.ts" -> "packages/ports/types.ts"
+    subgraph "cluster_packages" {label="packages" subgraph "cluster_packages/ports" {label="ports" "packages/ports/index.ts" [label=<index.ts> tooltip="index.ts" URL="packages/ports/index.ts" fillcolor="#ddfeff"] } }
+    "packages/ports/index.ts" -> "packages/ports/CodeProcessor.ts" [arrowhead="inv"]
+    "packages/ports/index.ts" -> "packages/ports/EmbeddingService.ts" [arrowhead="inv"]
+    "packages/ports/index.ts" -> "packages/ports/types.ts"
+    "packages/ports/index.ts" -> "packages/ports/VectorStore.ts" [arrowhead="inv"]
+    subgraph "cluster_packages" {label="packages" subgraph "cluster_packages/ports" {label="ports" "packages/ports/types.ts" [label=<types.ts> tooltip="types.ts" URL="packages/ports/types.ts" fillcolor="#ddfeff"] } }
+}

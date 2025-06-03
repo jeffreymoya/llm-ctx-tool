@@ -1,2 +1,2 @@
-export * from './entities/CodeChunk';
-export * from './services/CodeAnalyzer';
+export * from './entities/CodeChunk.ts';
+export * from './services/CodeAnalyzer.ts';

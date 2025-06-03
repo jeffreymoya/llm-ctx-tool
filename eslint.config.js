@@ -1,126 +1,177 @@
+// ============================================================================
+// eslint.config.js - Modern flat config style
+// ============================================================================
 import globals from "globals";
 import tseslint from "typescript-eslint";
 import eslintPluginImport from 'eslint-plugin-import';
-import eslintPluginNode from 'eslint-plugin-node';
 import prettierRecommended from 'eslint-config-prettier';
 import eslintPluginPrettier from 'eslint-plugin-prettier';
 import { fileURLToPath } from 'url';
 import path from 'path';
-import { fixupPluginRules } from '@eslint/compat';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const projectDir = __dirname;
 
 export default tseslint.config(
-  { // Global ignores
+  // Global ignores
+  {
     ignores: [
-      'node_modules',
-      'dist',
-      'coverage',
+      'node_modules/**',
+      'dist/**',
+      'coverage/**',
       '*.log',
       '.DS_Store',
-      '*.env',
-      // Add any other ignore patterns from .eslintignore
-      // TODO: Consolidate ignore patterns from .eslintignore into this file.
+      '*.env*',
     ],
   },
-  { // Language options and recommended rules for packages
-    files: ['packages/**/*.ts'],
+
+  // Base TypeScript configuration
+  {
+    files: ['packages/**/*.{ts,tsx}'],
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
-        project: path.resolve(projectDir, 'tsconfig.json'),
-        tsconfigRootDir: projectDir,
-        ecmaVersion: 2020,
+        project: './tsconfig.json',
+        ecmaVersion: 2022, // Aligned with tsconfig
         sourceType: 'module',
       },
       globals: {
         ...globals.node,
-        // jest: true, // Assuming jest is used for testing
+        ...globals.es2022, // Add ES2022 globals
       },
     },
-    // Apply recommended ESLint and TypeScript ESLint rules
-    rules: {
-      // Add other core rules or overrides here
-      // e.g., 'no-console': 'warn',
+    linterOptions: {
+      reportUnusedDisableDirectives: true,
     },
   },
-  ...tseslint.configs.recommended, // Include recommended configs as separate objects
-  { // Configuration for test files
-    files: ["**/*.test.ts", "**/__tests__/**/*.ts"],
-    languageOptions: {
-      globals: {
-        jest: true,
-      },
-    },
-  },
-  { // Import plugin configuration for packages
-    files: ['packages/**/*.ts'],
-    plugins: { import: eslintPluginImport },
-    rules: {
-      ...eslintPluginImport.configs.recommended.rules,
-      ...eslintPluginImport.configs.typescript.rules,
-      'import/extensions': [
-        'error',
-        'ignorePackages',
-        {
-          js: 'never',
-          jsx: 'never',
-          ts: 'never',
-          tsx: 'never',
-        },
-      ],
-      // Add or override import rules
+
+  // TypeScript recommended rules
+  ...tseslint.configs.recommended,
+  ...tseslint.configs.recommendedTypeChecked,
+
+  // Import plugin configuration
+  {
+    files: ['packages/**/*.{ts,tsx}'],
+    plugins: {
+      import: eslintPluginImport,
     },
     settings: {
       'import/resolver': {
         typescript: {
           alwaysTryTypes: true,
-          project: path.resolve(projectDir, 'tsconfig.json'),
+          project: './tsconfig.json',
         },
-        node: {},
+      },
+      'import/parsers': {
+        '@typescript-eslint/parser': ['.ts', '.tsx'],
       },
     },
-  },
-  { // Node plugin configuration for packages
-    files: ['packages/**/*.ts'],
-    plugins: { 
-      node: fixupPluginRules(eslintPluginNode),
-    },
     rules: {
-      ...eslintPluginNode.configs.recommended.rules,
-      'node/no-unsupported-features/es-syntax': ['error', { ignores: ['modules'] }],
-      'node/no-missing-import': [
+      // Import rules aligned with TypeScript setup
+      'import/no-unresolved': 'off', // Let TypeScript handle resolution
+      'import/extensions': [
         'error',
+        'always',
         {
-          tryExtensions: ['.js', '.json', '.node', '.ts', '.d.ts'],
+          ignorePackages: true,
         },
       ],
-      // Add or override node rules
+      'import/no-extraneous-dependencies': [
+        'error',
+        {
+          devDependencies: [
+            '**/*.test.ts',
+            '**/*.spec.ts',
+            '**/test/**',
+            '**/tests/**',
+          ],
+        },
+      ],
+      'import/order': [
+        'error',
+        {
+          groups: [
+            'builtin',
+            'external',
+            'internal',
+            'parent',
+            'sibling',
+            'index',
+          ],
+          'newlines-between': 'always',
+          alphabetize: {
+            order: 'asc',
+            caseInsensitive: true,
+          },
+        },
+      ],
     },
   },
-  { // Prettier integration for packages (place last)
-    files: ['packages/**/*.ts'],
+
+  // TypeScript-specific rules
+  {
+    files: ['packages/**/*.{ts,tsx}'],
+    rules: {
+      // Align with strict TypeScript config
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
+      ],
+      '@typescript-eslint/explicit-function-return-type': [
+        'warn',
+        {
+          allowExpressions: true,
+          allowTypedFunctionExpressions: true,
+        },
+      ],
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/prefer-nullish-coalescing': 'error',
+      '@typescript-eslint/prefer-optional-chain': 'error',
+      '@typescript-eslint/no-floating-promises': 'error',
+    },
+  },
+
+  // Test files configuration
+  {
+    files: ['**/*.{test,spec}.{ts,tsx}', '**/test/**/*.{ts,tsx}'],
+    languageOptions: {
+      globals: {
+        ...globals.jest,
+        ...globals.node,
+      },
+    },
+    rules: {
+      '@typescript-eslint/explicit-function-return-type': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
+
+  // Prettier integration (must be last)
+  {
+    files: ['packages/**/*.{ts,tsx,js,jsx}'],
     plugins: {
       prettier: eslintPluginPrettier,
     },
-    ...prettierRecommended,
     rules: {
-      // Prettier conflicts are handled by eslint-config-prettier
+      ...prettierRecommended.rules,
       'prettier/prettier': 'error',
     },
   },
-  { // Handle overrides for .js files
-    files: ['**/*.js'],
+
+  // JavaScript files (config files, etc.)
+  {
+    files: ['**/*.{js,mjs,cjs}'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
     rules: {
       '@typescript-eslint/no-var-requires': 'off',
-      'node/no-unpublished-require': 'off' // Allow require of devDependencies in JS files like config files
+      '@typescript-eslint/no-require-imports': 'off',
     },
   }
 );
-
-/*
-Note on Architectural Layer Rules:
-The project enforces hexagonal architecture layer dependencies (core -> ports, app -> core/ports, adapters -> ports/external, cli -> app) primarily using `dependency-cruiser`. While ESLint could potentially contribute with plugins like `eslint-plugin-import`'s `no-restricted-paths`, the primary enforcement mechanism is `dependency-cruiser`. Further ESLint integration for architectural rules can be considered if needed.
-*/ 
