@@ -1,11 +1,11 @@
-import { PipelineStage, ValidationResult } from '@llmctx/ports/IPipeline';
-import { CodeChunk } from '@llmctx/ports';
+import type { PipelineStage } from '@ports/IPipeline';
+import type { CodeChunk } from '@ports/types';
 
 export class PassThroughValidator implements PipelineStage<CodeChunk, CodeChunk> {
   readonly name = 'pass-through';
 
-  async process(input: CodeChunk): Promise<CodeChunk> {
+  process(input: CodeChunk): Promise<CodeChunk> {
     // Default: just pass through without validation
-    return input;
+    return Promise.resolve(input);
   }
-} 
+}

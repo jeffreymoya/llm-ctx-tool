@@ -1,3 +1,10 @@
+export interface Logger {
+  info(message: string): void;
+  warn(message: string): void;
+  error(message: string): void;
+  debug?(message: string): void;
+}
+
 export interface IPlugin {
   readonly name: string;
   readonly version: string;
@@ -9,7 +16,7 @@ export interface IPlugin {
 
 export interface PluginContext {
   container: unknown; // DI container
-  logger: unknown; // Logger instance
+  logger: Logger; // Logger instance
   config: unknown; // Configuration
 }
 

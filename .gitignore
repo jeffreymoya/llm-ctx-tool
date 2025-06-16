@@ -29,5 +29,8 @@ dist/
 tasks.json
 tasks/
 
+# Requirements (internal documents)
+requirements/
+
 # Docker Compose
 docker-compose.override.yml 

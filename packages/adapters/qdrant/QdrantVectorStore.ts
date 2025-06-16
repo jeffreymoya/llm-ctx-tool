@@ -1,24 +1,27 @@
-import { VectorStore, CodeChunk, SearchResult } from '@ports';
-import { QdrantClient } from '@qdrant/js-client-rest';
+import type { QdrantClient } from '@qdrant/js-client-rest';
+
+import type { VectorStore, CodeChunk, SearchResult } from '@ports/index';
 
 export class QdrantVectorStore implements VectorStore {
-  constructor(private client: QdrantClient) {}
+  constructor(private readonly client: QdrantClient) {}
 
-  async upsert(chunks: CodeChunk[]): Promise<void> {
+  upsert(_chunks: CodeChunk[]): Promise<void> {
     // Implementation from existing qdrant-client.ts
+    return Promise.resolve();
   }
 
-  async search(query: string, limit = 10): Promise<SearchResult[]> {
+  search(query: string, _limit = 10): Promise<SearchResult[]> {
     // Implementation
-    return []; // TODO: Implement search logic
+    return Promise.resolve([]); // TODO: Implement search logic
   }
 
-  async delete(ids: string[]): Promise<void> {
+  delete(_ids: string[]): Promise<void> {
     // Implementation
+    return Promise.resolve();
   }
 
-  async healthCheck(): Promise<boolean> {
+  healthCheck(): Promise<boolean> {
     // Implementation
-    return true; // TODO: Implement health check logic
+    return Promise.resolve(true); // TODO: Implement health check logic
   }
-} 
+}

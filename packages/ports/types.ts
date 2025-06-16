@@ -20,6 +20,18 @@ export interface SearchResult {
   score: number;
 }
 
+export interface Query {
+  text: string;
+  filters?: Record<string, string | number | boolean>;
+  limit?: number;
+  minScore?: number;
+}
+
+export interface IRetriever {
+  search(query: Query): Promise<SearchResult[]>;
+  retrieve(query: Query, results: SearchResult[]): Promise<SearchResult[]>;
+}
+
 export interface FileAnalysis {
   exports: string[];
   imports: string[];

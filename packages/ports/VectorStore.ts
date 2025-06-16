@@ -1,4 +1,4 @@
-import { CodeChunk, SearchResult } from './types.ts';
+import type { CodeChunk, SearchResult } from './types.ts';
 
 export interface VectorStore {
   upsert(chunks: CodeChunk[]): Promise<void>;

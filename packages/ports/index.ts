@@ -1,4 +1,4 @@
-import { CodeChunk, SearchResult, FileAnalysis } from './types.ts';
+import type { CodeChunk, SearchResult, FileAnalysis } from './types.ts';
 
 // Vector store operations
 export interface VectorStore {
@@ -20,7 +20,7 @@ export interface EmbeddingService {
   embedBatch(texts: string[]): Promise<number[][]>;
 }
 
-export * from './VectorStore.ts';
-export * from './CodeProcessor.ts';
-export * from './EmbeddingService.ts';
-export * from './types.ts';
+export type * from './VectorStore.ts';
+export type * from './CodeProcessor.ts';
+export type * from './EmbeddingService.ts';
+export type * from './types.ts';

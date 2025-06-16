@@ -1,4 +1,4 @@
-import { CodeChunk } from '../CodeChunk';
+import { CodeChunk } from '../CodeChunk.ts';
 
 describe('CodeChunk', () => {
   it('should correctly create an ID based on file path and start line', () => {
@@ -17,4 +17,4 @@ describe('CodeChunk', () => {
     const chunk = new CodeChunk('id', 'content', 'file.ts', 10, 15);
     expect(chunk.lineCount).toBe(6);
   });
-}); 
+});

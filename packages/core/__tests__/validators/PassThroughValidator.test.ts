@@ -1,5 +1,6 @@
-import { PassThroughValidator } from '../../validators/PassThroughValidator';
-import { CodeChunk } from '@llmctx/ports';
+import type { CodeChunk } from '@ports/types';
+
+import { PassThroughValidator } from '../../validators/PassThroughValidator.ts';
 
 describe('PassThroughValidator', () => {
   let validator: PassThroughValidator;
@@ -15,7 +16,7 @@ describe('PassThroughValidator', () => {
       filePath: '/test.ts',
       startLine: 1,
       endLine: 1,
-      metadata: {}
+      metadata: {},
     };
 
     const result = await validator.process(input);
@@ -25,4 +26,4 @@ describe('PassThroughValidator', () => {
   it('should have correct name', () => {
     expect(validator.name).toBe('pass-through');
   });
-}); 
+});

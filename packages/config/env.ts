@@ -43,7 +43,9 @@ export function getEnv(): Environment {
 
   if (!result.success) {
     // Linter prefers throwing an error over process.exit
-    const issues = result.error.issues.map((issue) => `  ${issue.path.join('.')}: ${issue.message}`).join('\n');
+    const issues = result.error.issues
+      .map((issue) => `  ${issue.path.join('.')}: ${issue.message}`)
+      .join('\n');
     throw new Error(`Environment validation failed:\n${issues}`);
   }
 
