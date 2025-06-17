@@ -1,0 +1,14 @@
+{
+  "name": "@llm-ctx-tool/config",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./index.ts",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "dependencies": {
+    "reflect-metadata": "0.2.1",
+    "tsyringe": "4.8.0",
+    "zod": "3.22.4"
+  }
+} 

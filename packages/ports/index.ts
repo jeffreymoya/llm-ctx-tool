@@ -20,7 +20,10 @@ export interface EmbeddingService {
   embedBatch(texts: string[]): Promise<number[][]>;
 }
 
-export type * from './VectorStore.ts';
-export type * from './CodeProcessor.ts';
-export type * from './EmbeddingService.ts';
-export type * from './types.ts';
+export * from './CodeProcessor.ts';
+export * from './EmbeddingService.ts';
+export * from './IPipeline.ts';
+export type { IPlugin, PluginContext, PluginManifest } from './IPlugin.ts';
+export type { Logger, LogMetadata } from './Logger.ts';
+export * from './types.ts';
+export * from './VectorStore.ts';

@@ -6,47 +6,67 @@ alwaysApply: false
 <!-- cursor-rule: enforce-tooling-config -->
 
 **Authority Level**: Non-negotiable hard guard-rail.
+# TypeScript ESLint: Human-Readable Rule List
 
-## Purpose
+## Unsafe/Type Safety Rules
+- Do not assign values of unknown or unsafe types (`no-unsafe-assignment`).
+- Do not call functions/methods on unknown or unsafe types (`no-unsafe-call`).
+- Do not access properties/methods on unknown or unsafe types (`no-unsafe-member-access`).
+- Do not return unknown or unsafe types from functions (`no-unsafe-return`).
 
-Force the LLM to honour the project's TypeScript (`tsconfig.json`), ESLint (`eslint.config.js`) and Prettier (`.prettierrc.*`) configurations whenever it generates, edits or reviews code.
+## Core TypeScript Rules
+- Never use the `any` type (`no-explicit-any`).
+- Never declare and not use a variable or parameter (`no-unused-vars`).
+- Do not use variables before they are defined (`no-use-before-define`).
+- Always provide an explicit return type for exported functions and class methods (`explicit-module-boundary-types`).
+- Prefer `const` over `let` or `var` where possible (`prefer-const`).
+- Prefer nullish coalescing (`??`) over `||` (`prefer-nullish-coalescing`).
+- Prefer optional chaining (`?.`) over manual checks (`prefer-optional-chain`).
+- Disallow unused expressions (`no-unused-expressions`).
+- Do not shadow variable declarations (`no-shadow`).
+- Do not use `require` statements except in import statements (`no-var-requires`).
+- Do not use non-null assertions after an optional chain expression (`no-non-null-asserted-optional-chain`).
+- Require `await` with every promise (no floating promises) (`no-floating-promises`).
 
-## Requirements
+## Strictness and Safety
+- Avoid implicit `any` types (`no-implicit-any`).
+- Avoid using `eval()` (`no-implied-eval`).
+- Avoid unbound methods that cause `this` context issues (`unbound-method`).
+- Type assertions should be object-like (`consistent-type-assertions`).
+- Do not add explicit type declarations where types can be inferred (`no-inferrable-types`).
+- Use type-only imports/exports for types, not values (`consistent-type-imports`).
+- Prefer `const enum` over regular enums (`prefer-enum-initializers`).
+- Prefer function types over object types with call signatures (`prefer-function-type`).
+- Prefer `includes()` over `indexOf()` for arrays (`prefer-includes`).
+- Prefer string `startsWith/endsWith` over `indexOf` comparisons (`prefer-string-starts-ends-with`).
+- Avoid unnecessary type arguments (`no-unnecessary-type-arguments`).
+- Avoid unnecessary boolean comparisons (`no-unnecessary-boolean-literal-compare`).
+- Avoid unnecessary type assertions (`no-unnecessary-type-assertion`).
+- Avoid unnecessary conditionals (`no-unnecessary-condition`).
+- Avoid unnecessary equality comparisons (`no-unnecessary-equality`).
+- Avoid unnecessary template literals (`no-unnecessary-template-expressions`).
+- Disallow useless empty exports (`no-useless-empty-export`).
+- Disallow useless constructors in classes (`no-useless-constructor`).
+- Do not return values from constructors (`no-constructor-return`).
+- Disallow duplicate imports (`no-duplicate-imports`).
+- Require default cases in switch statements (`switch-exhaustiveness-check`).
+- Disallow assignment operators in conditional expressions (`no-cond-assign`).
+- Do not use deprecated APIs (`deprecation`).
 
-1. **TypeScript**
+## Code Style & Best Practices
+- Use consistent type definitions (`type` vs `interface`) (`consistent-type-definitions`).
+- Use consistent member delimiter style (`member-delimiter-style`).
+- Use consistent naming conventions (`naming-convention`).
+- Use consistent spacing between type annotations (`type-annotation-spacing`).
+- Prefer type imports for types (`consistent-type-imports`).
+- Explicitly specify all function return types (`explicit-function-return-type`).
+- Alphabetically sort union/intersection types (`sort-type-union-intersection-members`).
+- Use a consistent index signature style (`index-signature-style`).
+- Prefer using `for-of` loops (`prefer-for-of`).
 
-   * ALWAYS read `tsconfig.json` in the repository root.
-   * Ensure every change would compile with `pnpm tsc --project tsconfig.json --noEmit`.
-   * Honour `baseUrl`, `paths`, `strict`, `target`, and any other compiler options.
-   * Do **NOT** introduce compiler errors or suppress them with `@ts-ignore` (unless an existing line already had it).
+---
 
-2. **ESLint**
+**If any rule is violated, the code must be fixed before it can be considered complete. Use type assertions, validation libraries, or custom type guards when handling untyped or external data.**
 
-   * Follow every rule declared in the project's `.eslintrc.*`.
-   * Before proposing the final patch, run `pnpm eslint . --ext .ts,.tsx --max-warnings 0 --fix` and resolve **all** errors and warnings.
-   * Never disable a rule unless an identical disable comment already exists.
-
-3. **Prettier**
-
-   * Format code according to the project's Prettier config (`.prettierrc.*`).
-   * Verify formatting with `pnpm prettier --check .` before finalising the patch.
-
-## Acceptance Test (auto-executed by Cursor)
-
-```bash
-pnpm run fix
-```
-
-If **any** command exits with a non-zero status the patch MUST be rejected and re-worked automatically until the test suite passes.
-
-## Enforcement Rules
-
-* The LLM **must not** deliver a patch that fails the Acceptance Test.
-* The LLM **must** iteratively fix its output until all tooling checks pass.
-* If a requested change inherently violates a tooling rule, the LLM must explain why and propose an alternative that complies.
-
-## Update Policy
-
-When tsconfig, ESLint or Prettier configurations change, automatically update the **Acceptance Test** commands to reflect the new filenames or script aliases. Leave the rest of this file intact.
 
 *This rule is a hard-coded law. The LLM is not permitted to ignore, override, or reinterpret it under any circumstances.*

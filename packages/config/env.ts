@@ -54,4 +54,6 @@ export function getEnv(): Environment {
 }
 
 // Validate immediately when imported
-getEnv();
+const env = getEnv();
+
+export { env };
